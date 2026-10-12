@@ -7,11 +7,11 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"strings"
 	"time"
 
 	"fyne.io/systray"
 
+	"github.com/valgog/pingbar/internal/chart"
 	"github.com/valgog/pingbar/internal/stats"
 	"github.com/valgog/pingbar/internal/store"
 	"github.com/valgog/pingbar/internal/view"
@@ -19,8 +19,10 @@ import (
 
 const (
 	maxOutages   = 8
-	historyCells = 30
-	historyCell  = 30 * time.Second // 30 cells × 30s = last 15 minutes
+	historySpan  = 15 * time.Minute
+	historyCells = 90 // one bar per 10 seconds
+	chartW       = 300
+	chartH       = 110
 )
 
 func dot(l stats.Level) string {
@@ -33,18 +35,6 @@ func dot(l stats.Level) string {
 		return "🔴"
 	}
 	return "⚪️"
-}
-
-func square(b stats.Bucket) string {
-	switch b.Level() {
-	case stats.Good:
-		return "🟩"
-	case stats.Degraded:
-		return "🟨"
-	case stats.Bad:
-		return "🟥"
-	}
-	return "⬜️"
 }
 
 // Run shows the menu-bar item; it must be called from main and blocks until Quit.
@@ -61,10 +51,13 @@ func onReady(st *store.Store) {
 	router := systray.AddMenuItem("Router: …", "")
 	router.Disable()
 	systray.AddSeparator()
-	histTitle := systray.AddMenuItem("Last 15 minutes", "")
+	histTitle := systray.AddMenuItem("Internet latency, last 15 minutes", "")
 	histTitle.Disable()
-	hist := systray.AddMenuItem("", "Each square is 30 seconds")
-	hist.Disable()
+	hist := systray.AddMenuItem("", "Latency per 10 seconds; red bars are lost pings. Click to open the dashboard.")
+	if !nativeImages {
+		histTitle.Hide()
+		hist.Hide()
+	}
 	systray.AddSeparator()
 	outTitle := systray.AddMenuItem("Outages today", "")
 	outTitle.Disable()
@@ -82,6 +75,8 @@ func onReady(st *store.Store) {
 		for {
 			select {
 			case <-openTUI.ClickedCh:
+				openTerminal()
+			case <-hist.ClickedCh:
 				openTerminal()
 			case <-quit.ClickedCh:
 				systray.Quit()
@@ -104,13 +99,12 @@ func onReady(st *store.Store) {
 		internet.SetTitle(describe("Internet", snap.Internet))
 		router.SetTitle(describe("Router", snap.Router))
 
-		start := now.Truncate(historyCell).Add(-(historyCells - 1) * historyCell)
-		if bs, err := st.Buckets(stats.Internet, start, historyCell, historyCells); err == nil {
-			var sb strings.Builder
-			for _, b := range bs {
-				sb.WriteString(square(b))
+		if nativeImages {
+			cell := historySpan / historyCells
+			start := now.Truncate(cell).Add(-(historyCells - 1) * cell)
+			if bs, err := st.Buckets(stats.Internet, start, cell, historyCells); err == nil {
+				setItemImage(hist, chart.Full(bs, historySpan, chartW, chartH), chartW, chartH)
 			}
-			hist.SetTitle(sb.String())
 		}
 
 		midnight := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())

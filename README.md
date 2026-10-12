@@ -4,7 +4,7 @@ Keeps an eye on your internet connection so you know whether it's your network w
 
 pingbar pings `8.8.8.8` and your router once a second, stores every result in a local SQLite file, and shows the status:
 
-- **in the macOS menu bar**: 🟢 `23 ms`, 🟡 `180 ms`, 🔴 `offline` or 🔴 `Wi-Fi down`. Clicking it shows details, the last 15 minutes as colored squares, and today's outages.
+- **in the macOS menu bar**: 🟢 `23 ms`, 🟡 `180 ms`, 🔴 `offline` or 🔴 `Wi-Fi down`. Clicking it shows details, a latency graph of the last 15 minutes (milliseconds on the y-axis, lost pings as red bars), and today's outages.
 - **in the terminal**: a live dashboard with a zoomable history (1s, 10s, 1m or 5m per cell) and an outage log.
 
 Because the router is pinged as well, it can tell a Wi-Fi or router problem (both down) apart from an internet/ISP problem (router fine, internet down).
@@ -59,7 +59,6 @@ Everything lives in `~/Library/Application Support/pingbar/`: `history.db` (SQLi
 
 - Detect when a Google Meet call is running and mark outages that happened during a call.
 - Notifications when the connection drops during a call.
-- A small chart in the menu instead of emoji squares.
 
 ## License
 
