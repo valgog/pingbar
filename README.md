@@ -11,7 +11,7 @@ Because the router is pinged as well, it can tell a Wi-Fi or router problem (bot
 
 ## Install
 
-Requires Go 1.26+ and Xcode command-line tools (the menu-bar item uses Cocoa through cgo).
+Requires Go 1.26.9+ and Xcode command-line tools (the menu-bar item uses Cocoa through cgo).
 
 ```sh
 git clone git@github.com:valgog/pingbar.git

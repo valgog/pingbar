@@ -22,3 +22,6 @@ jobs:
       - run: go build -o pingbar .
       - name: Smoke test
         run: ./pingbar status && ./pingbar outages
+      - name: Known vulnerabilities
+        if: runner.os == 'Linux'
+        run: go run golang.org/x/vuln/cmd/govulncheck@latest ./...
