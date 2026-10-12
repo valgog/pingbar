@@ -20,7 +20,7 @@ make install                   # copies to ~/.local/bin
 PINGBAR_DIR=$(mktemp -d) ./pingbar   # run against a throwaway database
 ```
 
-CI (`.github/workflows/ci.yml`) runs gofmt, vet, test, build and a `status`/`outages` smoke test on `macos-latest` and `ubuntu-latest`. The macOS job is the only place the cgo/Objective-C code is compiled, so a change to `internal/menubar/*_darwin.go` is only verified once CI runs.
+CI (`.github/workflows/ci.yml`) runs gofmt, vet, test, build and a `status`/`outages` smoke test on `macos-latest` and `ubuntu-latest`, plus `govulncheck` on Linux. Keep the `go` line in `go.mod` at a patched Go release; it is the minimum toolchain everyone builds with. The macOS job is the only place the cgo/Objective-C code is compiled, so a change to `internal/menubar/*_darwin.go` is only verified once CI runs.
 
 ## Layout
 
