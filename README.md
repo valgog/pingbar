@@ -60,3 +60,7 @@ Everything lives in `~/Library/Application Support/pingbar/`: `history.db` (SQLi
 - Detect when a Google Meet call is running and mark outages that happened during a call.
 - Notifications when the connection drops during a call.
 - A small chart in the menu instead of emoji squares.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
