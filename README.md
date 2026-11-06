@@ -9,6 +9,8 @@ pingbar pings `8.8.8.8` and your router once a second, stores every result in a 
 
 Because the router is pinged as well, it can tell a Wi-Fi or router problem (both down) apart from an internet/ISP problem (router fine, internet down).
 
+In the macOS menu, status, headings, and outage entries are read-only labels that stay readable in light and dark mode; click the graph or "Open dashboard in Terminal" to open the dashboard.
+
 ## Install
 
 Requires Go 1.26.9+ and Xcode command-line tools (the menu-bar item uses Cocoa through cgo).
