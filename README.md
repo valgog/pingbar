@@ -13,7 +13,7 @@ In the macOS menu, status, headings, and outage entries are read-only labels tha
 
 ## Install
 
-Requires Go 1.26.9+ and Xcode command-line tools (the menu-bar item uses Cocoa through cgo).
+Requires Go 1.26.10+ and Xcode command-line tools (the menu-bar item uses Cocoa through cgo).
 
 ```sh
 git clone git@github.com:valgog/pingbar.git
