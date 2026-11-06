@@ -9,3 +9,5 @@ import "fyne.io/systray"
 const nativeImages = false
 
 func setItemImage(*systray.MenuItem, []byte, int, int) {}
+
+func setItemLabel(*systray.MenuItem) {}

@@ -5,6 +5,8 @@ package menubar
 #cgo LDFLAGS: -framework Cocoa
 #import <Cocoa/Cocoa.h>
 
+void pingbar_set_item_label(int tag);
+
 // systray only sets 16x16 menu-item images, so the graph is set directly on
 // the NSMenuItem, found through the systray app delegate's menu by tag (the
 // tag is systray's item id).
@@ -30,6 +32,7 @@ import "C"
 
 import (
 	"fmt"
+	"log"
 	"unsafe"
 
 	"fyne.io/systray"
@@ -39,9 +42,24 @@ const nativeImages = true
 
 // setItemImage shows png (drawn at chart.Scale) on item at w×h points.
 func setItemImage(item *systray.MenuItem, png []byte, w, h int) {
-	var id int
-	if _, err := fmt.Sscanf(item.String(), "MenuItem[%d", &id); err != nil || len(png) == 0 {
+	id, ok := itemID(item)
+	if !ok || len(png) == 0 {
 		return
 	}
 	C.pingbar_set_item_image(C.int(id), unsafe.Pointer(&png[0]), C.int(len(png)), C.double(w), C.double(h))
+}
+
+func setItemLabel(item *systray.MenuItem) {
+	if id, ok := itemID(item); ok {
+		C.pingbar_set_item_label(C.int(id))
+	}
+}
+
+func itemID(item *systray.MenuItem) (int, bool) {
+	var id int
+	if _, err := fmt.Sscanf(item.String(), "MenuItem[%d", &id); err != nil {
+		log.Printf("menu item ID: %v", err)
+		return 0, false
+	}
+	return id, true
 }

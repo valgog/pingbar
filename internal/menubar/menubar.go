@@ -46,25 +46,20 @@ func onReady(st *store.Store) {
 	systray.SetTitle("⚪️")
 	systray.SetTooltip("pingbar")
 
-	internet := systray.AddMenuItem("Internet: …", "")
-	internet.Disable()
-	router := systray.AddMenuItem("Router: …", "")
-	router.Disable()
+	internet := addInfoItem("Internet: …")
+	router := addInfoItem("Router: …")
 	systray.AddSeparator()
-	histTitle := systray.AddMenuItem("Internet latency, last 15 minutes", "")
-	histTitle.Disable()
+	histTitle := addInfoItem("Internet latency, last 15 minutes")
 	hist := systray.AddMenuItem("", "Latency per 10 seconds; red bars are lost pings. Click to open the dashboard.")
 	if !nativeImages {
 		histTitle.Hide()
 		hist.Hide()
 	}
 	systray.AddSeparator()
-	outTitle := systray.AddMenuItem("Outages today", "")
-	outTitle.Disable()
+	outTitle := addInfoItem("Outages today")
 	outs := make([]*systray.MenuItem, maxOutages)
 	for i := range outs {
-		outs[i] = systray.AddMenuItem("", "")
-		outs[i].Disable()
+		outs[i] = addInfoItem("")
 		outs[i].Hide()
 	}
 	systray.AddSeparator()
@@ -96,8 +91,8 @@ func onReady(st *store.Store) {
 		level, text := snap.Headline()
 		systray.SetTitle(dot(level) + " " + text)
 		systray.SetTooltip("pingbar: " + text)
-		internet.SetTitle(describe("Internet", snap.Internet))
-		router.SetTitle(describe("Router", snap.Router))
+		setInfoTitle(internet, describe("Internet", snap.Internet))
+		setInfoTitle(router, describe("Router", snap.Router))
 
 		if nativeImages {
 			cell := historySpan / historyCells
@@ -117,7 +112,7 @@ func onReady(st *store.Store) {
 			if o.End.IsZero() {
 				label += " (ongoing)"
 			}
-			outs[n].SetTitle(label)
+			setInfoTitle(outs[n], label)
 			outs[n].Show()
 			n++
 		}
@@ -125,9 +120,9 @@ func onReady(st *store.Store) {
 			m.Hide()
 		}
 		if n == 0 {
-			outTitle.SetTitle("No outages today")
+			setInfoTitle(outTitle, "No outages today")
 		} else {
-			outTitle.SetTitle("Outages today")
+			setInfoTitle(outTitle, "Outages today")
 		}
 	}
 	update()
@@ -136,6 +131,18 @@ func onReady(st *store.Store) {
 			update()
 		}
 	}()
+}
+
+func addInfoItem(title string) *systray.MenuItem {
+	item := systray.AddMenuItem(title, "")
+	item.Disable()
+	setItemLabel(item)
+	return item
+}
+
+func setInfoTitle(item *systray.MenuItem, title string) {
+	item.SetTitle(title)
+	setItemLabel(item)
 }
 
 func describe(name string, s stats.Summary) string {
